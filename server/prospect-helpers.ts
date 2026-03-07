@@ -53,3 +53,10 @@ export function validateProspect(data: Record<string, unknown>): { valid: boolea
 export function isTerminalStatus(status: string): boolean {
   return status === "Rejected" || status === "Withdrawn" || status === "Offer";
 }
+
+export function getDaysSinceCreated(createdAt: Date | string, now?: Date): number {
+  const created = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
+  const today = now ?? new Date();
+  const diffMs = today.getTime() - created.getTime();
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}

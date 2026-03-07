@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Prospect } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign } from "lucide-react";
+import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign, Clock } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -135,6 +135,17 @@ export function ProspectCard({ prospect }: { prospect: Prospect }) {
             {prospect.notes}
           </p>
         )}
+
+        <div className="flex items-center gap-1 text-xs text-muted-foreground" data-testid={`text-days-${prospect.id}`}>
+          <Clock className="w-3 h-3" />
+          {(() => {
+            const created = typeof prospect.createdAt === "string" ? new Date(prospect.createdAt) : prospect.createdAt;
+            const now = new Date();
+            const diffMs = now.getTime() - created.getTime();
+            const days = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+            return `${days} day${days !== 1 ? "s" : ""}`;
+          })()}
+        </div>
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>

@@ -1,4 +1,4 @@
-import { validateProspect } from "../prospect-helpers";
+import { validateProspect, getDaysSinceCreated } from "../prospect-helpers";
 
 describe("prospect creation validation", () => {
   test("rejects a blank company name", () => {
@@ -97,5 +97,54 @@ describe("salary input validation", () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("Salary must be a whole number");
+  });
+});
+
+describe("days since created calculation", () => {
+  test("returns 0 for a card created today", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    const created = new Date("2026-03-07T08:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(0);
+  });
+
+  test("returns 1 for a card created yesterday", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    const created = new Date("2026-03-06T12:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(1);
+  });
+
+  test("returns correct count for multiple days", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    const created = new Date("2026-02-25T12:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(10);
+  });
+
+  test("returns 0 and never negative for future dates", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    const created = new Date("2026-03-10T12:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(0);
+  });
+
+  test("floors partial days correctly", () => {
+    const now = new Date("2026-03-07T20:00:00Z");
+    const created = new Date("2026-03-06T22:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(0);
+  });
+
+  test("handles a full day boundary", () => {
+    const now = new Date("2026-03-07T22:00:00Z");
+    const created = new Date("2026-03-06T21:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(1);
+  });
+
+  test("accepts ISO string input for createdAt", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    expect(getDaysSinceCreated("2026-03-02T12:00:00Z", now)).toBe(5);
+  });
+
+  test("returns large count for old dates", () => {
+    const now = new Date("2026-03-07T12:00:00Z");
+    const created = new Date("2025-03-07T12:00:00Z");
+    expect(getDaysSinceCreated(created, now)).toBe(365);
   });
 });
