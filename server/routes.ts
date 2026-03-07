@@ -38,6 +38,12 @@ export async function registerRoutes(
     if (body.companyName !== undefined) updates.companyName = body.companyName;
     if (body.roleTitle !== undefined) updates.roleTitle = body.roleTitle;
     if (body.jobUrl !== undefined) updates.jobUrl = body.jobUrl;
+    if (body.salary !== undefined) {
+      if (body.salary !== null && (typeof body.salary !== "number" || !Number.isInteger(body.salary) || body.salary <= 0)) {
+        return res.status(400).json({ message: "Salary must be a positive whole number" });
+      }
+      updates.salary = body.salary;
+    }
     if (body.notes !== undefined) updates.notes = body.notes;
 
     if (body.status !== undefined) {
