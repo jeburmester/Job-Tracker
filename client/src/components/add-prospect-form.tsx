@@ -36,6 +36,7 @@ export function AddProspectForm({ onSuccess }: { onSuccess?: () => void }) {
       jobUrl: "",
       status: "Bookmarked",
       interestLevel: "Medium",
+      salary: null,
       notes: "",
     },
   });
@@ -98,6 +99,34 @@ export function AddProspectForm({ onSuccess }: { onSuccess?: () => void }) {
                   {...field}
                   value={field.value ?? ""}
                   data-testid="input-job-url"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="salary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Target Salary (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="e.g. 120000"
+                  data-testid="input-salary"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      field.onChange(null);
+                    } else {
+                      const num = Number(raw);
+                      field.onChange(Number.isNaN(num) ? null : num);
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
